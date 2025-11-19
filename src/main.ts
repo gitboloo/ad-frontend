@@ -9,6 +9,7 @@ import NProgress from 'nprogress'
 
 import App from './App.vue'
 import setupPermissionDirective from './directives/permission'
+import globalPlugin from './plugins/global'
 
 // 样式
 import 'element-plus/dist/index.css'
@@ -40,6 +41,7 @@ app.use(ElementPlus, {
   locale: zhCn,
   size: 'default',
 })
+app.use(globalPlugin)
 
 // 设置权限指令
 setupPermissionDirective(app)

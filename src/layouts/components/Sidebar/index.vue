@@ -61,6 +61,19 @@ const activeMenu = computed(() => {
 // 菜单列表
 const menuList = computed(() => {
   console.log('Sidebar menuList computed:', permissionStore.menuList)
+  // 添加详细的菜单结构日志
+  permissionStore.menuList.forEach((menu, index) => {
+    console.log(`Menu ${index}:`, {
+      id: menu.id,
+      title: menu.title,
+      path: menu.path,
+      children: menu.children?.map(child => ({
+        id: child.id,
+        title: child.title,
+        path: child.path
+      }))
+    })
+  })
   return permissionStore.menuList || []
 })
 </script>

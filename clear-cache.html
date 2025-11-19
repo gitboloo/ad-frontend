@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>清除缓存</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .success {
+            color: #27ae60;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .info {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🧹 清除浏览器缓存</h2>
+        <p class="info">点击下面的按钮清除 localStorage、sessionStorage 和刷新页面</p>
+        <button onclick="clearCache()">清除缓存并刷新</button>
+        <button onclick="goToLogin()">清除缓存并跳转登录</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function clearCache() {
+            // 清除 localStorage
+            localStorage.clear();
+            
+            // 清除 sessionStorage
+            sessionStorage.clear();
+            
+            // 显示成功消息
+            const msg = document.getElementById('message');
+            msg.className = 'success';
+            msg.textContent = '✅ 缓存已清除！正在刷新...';
+            
+            // 延迟刷新
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+        
+        function goToLogin() {
+            // 清除 localStorage
+            localStorage.clear();
+            
+            // 清除 sessionStorage
+            sessionStorage.clear();
+            
+            // 显示成功消息
+            const msg = document.getElementById('message');
+            msg.className = 'success';
+            msg.textContent = '✅ 缓存已清除！正在跳转到登录页...';
+            
+            // 延迟跳转
+            setTimeout(() => {
+                window.location.href = '/#/login';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

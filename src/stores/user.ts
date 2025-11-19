@@ -26,16 +26,16 @@ export const useUserStore = defineStore('user', () => {
   }): Promise<ApiResponse<{ token: string; admin: User }>> => {
     try {
       const response = await request.post<{ token: string; admin: User }>('/auth/login', loginForm)
-      
+
       if (response.code === 200 && response.data) {
         token.value = response.data.token
         user.value = response.data.admin  // 后端返回的是 admin 字段
         remember.value = loginForm.remember || false
-        
-        // 暂时注释掉权限获取，后端还未实现此接口
-        // await getUserPermissions()
+
+        // 登录成功后立即获取用户信息、角色、菜单和权限
+        await getUserInfo()
       }
-      
+
       return response
     } catch (error) {
       throw error
@@ -61,15 +61,49 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户信息
   const getUserInfo = async (): Promise<void> => {
     if (!token.value) return
-    
+
     try {
-      const response = await request.get<User>('/auth/me')
+      const response = await request.get<any>('/auth/me')
       if (response.code === 200 && response.data) {
-        user.value = response.data
-        // 获取权限信息
-        await getUserPermissions()
-        // 获取菜单信息
-        await getUserMenus()
+        // 后端返回的数据结构: { admin, roles, menus, permissions }
+        user.value = response.data.admin
+
+        // 保存角色信息
+        if (response.data.roles && response.data.roles.length > 0) {
+          user.value.roles = response.data.roles
+        }
+
+        // 保存菜单信息
+        if (response.data.menus) {
+          // 对菜单进行稳定排序（按 id 排序，深度递归）
+          const sortMenusRecursive = (menuList: any[]): any[] => {
+            if (!Array.isArray(menuList)) return menuList
+            
+            const sorted = [...menuList].sort((a, b) => {
+              const aId = typeof a.id === 'number' ? a.id : parseInt(a.id)
+              const bId = typeof b.id === 'number' ? b.id : parseInt(b.id)
+              return aId - bId
+            })
+            
+            return sorted.map(menu => ({
+              ...menu,
+              children: menu.children ? sortMenusRecursive(menu.children) : undefined
+            }))
+          }
+          
+          menus.value = sortMenusRecursive(response.data.menus)
+          
+          // 同时更新permission store的菜单（使用已排序的菜单）
+          const permissionStore = usePermissionStore()
+          permissionStore.setMenus(menus.value)
+        }
+
+        // 保存权限信息
+        if (response.data.permissions) {
+          // 后端返回的是字符串数组，直接使用
+          permissions.value = response.data.permissions
+          console.log('Permissions loaded:', permissions.value)
+        }
       }
     } catch (error) {
       console.error('Get user info error:', error)

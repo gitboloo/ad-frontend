@@ -89,16 +89,26 @@ const resolvePath = (routePath?: string) => {
     return props.basePath
   }
   
-  return props.basePath ? `${props.basePath}/${routePath}`.replace(/\/+/g, '/') : routePath
+  // 如果路径以 / 开头，说明是绝对路径
+  if (routePath.startsWith('/')) {
+    return routePath
+  }
+  
+  // 否则是相对路径，需要拼接
+  return props.basePath ? `${props.basePath}/${routePath}`.replace(/\/+/g, '/') : `/${routePath}`
 }
 
 // 处理菜单点击
 const handleMenuClick = (item: MenuItem) => {
+  console.log('[SidebarItem] Menu clicked:', item.title, 'path:', item.path)
   if (item.path) {
     if (isExternal(item.path)) {
       window.open(item.path, '_blank')
     } else {
-      router.push(item.path)
+      console.log('[SidebarItem] Navigating to:', item.path)
+      router.push(item.path).catch(err => {
+        console.error('[SidebarItem] Navigation failed:', err)
+      })
     }
   }
 }

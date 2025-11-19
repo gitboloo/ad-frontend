@@ -34,12 +34,12 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="计划描述" prop="description">
+        <el-form-item label="计划简介" prop="description">
           <el-input
             v-model="formData.description"
             type="textarea"
             :rows="3"
-            placeholder="请输入计划描述"
+            placeholder="请输入计划简介"
           />
         </el-form-item>
 
@@ -50,49 +50,142 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="计划Logo" prop="logo">
+        <el-form-item label="主图" prop="main_image">
           <el-upload
-            class="logo-uploader"
+            class="image-uploader"
             action="/api/upload"
             :show-file-list="false"
-            :on-success="handleLogoSuccess"
-            :before-upload="beforeLogoUpload"
+            :on-success="handleMainImageSuccess"
+            :before-upload="beforeImageUpload"
           >
-            <img v-if="formData.logo" :src="formData.logo" class="logo" />
-            <el-icon v-else class="logo-uploader-icon"><Plus /></el-icon>
+            <img v-if="formData.main_image" :src="formData.main_image" class="uploaded-image" />
+            <el-icon v-else class="uploader-icon"><Plus /></el-icon>
           </el-upload>
+          <div class="form-tip">推荐尺寸: 800x600px, 支持JPG/PNG, 最大2MB</div>
         </el-form-item>
 
-        <el-form-item label="投放内容" prop="delivery_content">
-          <div class="json-editor">
-            <el-input
-              v-model="deliveryContentStr"
-              type="textarea"
-              :rows="6"
-              placeholder='请输入JSON格式的投放内容，例如：{"title": "标题", "content": "内容", "action": "操作"}'
-            />
+        <el-form-item label="视频" prop="video">
+          <el-upload
+            class="video-uploader"
+            action="/api/upload"
+            :show-file-list="false"
+            :on-success="handleVideoSuccess"
+            :before-upload="beforeVideoUpload"
+          >
+            <video v-if="formData.video" :src="formData.video" class="uploaded-video" controls />
+            <el-icon v-else class="uploader-icon"><VideoCamera /></el-icon>
+          </el-upload>
+          <div class="form-tip">支持MP4格式, 最大50MB</div>
+        </el-form-item>
+
+        <!-- 投放内容 - 动态字段 -->
+        <el-form-item label="投放内容">
+          <div class="dynamic-fields">
+            <div
+              v-for="(item, index) in formData.delivery_content"
+              :key="'content-' + index"
+              class="field-item"
+            >
+              <el-input
+                v-model="item.title"
+                placeholder="标题/表头"
+                class="field-title"
+              />
+              <el-input
+                v-model="item.content"
+                type="textarea"
+                :rows="2"
+                placeholder="内容"
+                class="field-content"
+              />
+              <el-button
+                type="danger"
+                :icon="Delete"
+                circle
+                @click="removeField('delivery_content', index)"
+              />
+            </div>
+            <el-button
+              type="primary"
+              :icon="Plus"
+              @click="addField('delivery_content')"
+            >
+              添加投放内容
+            </el-button>
           </div>
         </el-form-item>
 
-        <el-form-item label="投放规则" prop="delivery_rules">
-          <div class="json-editor">
-            <el-input
-              v-model="deliveryRulesStr"
-              type="textarea"
-              :rows="6"
-              placeholder='请输入JSON格式的投放规则'
-            />
+        <!-- 投放规则 - 动态字段 -->
+        <el-form-item label="投放规则">
+          <div class="dynamic-fields">
+            <div
+              v-for="(item, index) in formData.delivery_rules"
+              :key="'rules-' + index"
+              class="field-item"
+            >
+              <el-input
+                v-model="item.title"
+                placeholder="标题/表头"
+                class="field-title"
+              />
+              <el-input
+                v-model="item.content"
+                type="textarea"
+                :rows="2"
+                placeholder="内容"
+                class="field-content"
+              />
+              <el-button
+                type="danger"
+                :icon="Delete"
+                circle
+                @click="removeField('delivery_rules', index)"
+              />
+            </div>
+            <el-button
+              type="primary"
+              :icon="Plus"
+              @click="addField('delivery_rules')"
+            >
+              添加投放规则
+            </el-button>
           </div>
         </el-form-item>
 
-        <el-form-item label="用户定向" prop="user_targeting">
-          <div class="json-editor">
-            <el-input
-              v-model="userTargetingStr"
-              type="textarea"
-              :rows="6"
-              placeholder='请输入JSON格式的用户定向规则'
-            />
+        <!-- 用户定向 - 动态字段 -->
+        <el-form-item label="用户定向">
+          <div class="dynamic-fields">
+            <div
+              v-for="(item, index) in formData.user_targeting"
+              :key="'targeting-' + index"
+              class="field-item"
+            >
+              <el-input
+                v-model="item.title"
+                placeholder="标题/表头"
+                class="field-title"
+              />
+              <el-input
+                v-model="item.content"
+                type="textarea"
+                :rows="2"
+                placeholder="内容"
+                class="field-content"
+              />
+              <el-button
+                type="danger"
+                :icon="Delete"
+                circle
+                @click="removeField('user_targeting', index)"
+              />
+            </div>
+            <el-button
+              type="primary"
+              :icon="Plus"
+              @click="addField('user_targeting')"
+            >
+              添加用户定向
+            </el-button>
           </div>
         </el-form-item>
 
@@ -111,20 +204,26 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, Delete, VideoCamera } from '@element-plus/icons-vue'
 import { createCampaign, updateCampaign, getCampaign } from '@/api/campaigns'
 import { getProducts } from '@/api/products'
 import type { FormInstance, FormRules, UploadProps } from 'element-plus'
+
+interface CustomField {
+  title: string
+  content: string
+}
 
 interface CampaignForm {
   name: string
   product_id: number | null
   description: string
   status: number
-  logo: string
-  delivery_content: any
-  delivery_rules: any
-  user_targeting: any
+  main_image: string
+  video: string
+  delivery_content: CustomField[]
+  delivery_rules: CustomField[]
+  user_targeting: CustomField[]
 }
 
 const route = useRoute()
@@ -141,15 +240,12 @@ const formData = reactive<CampaignForm>({
   product_id: null,
   description: '',
   status: 1,
-  logo: '',
-  delivery_content: {},
-  delivery_rules: {},
-  user_targeting: {}
+  main_image: '',
+  video: '',
+  delivery_content: [],
+  delivery_rules: [],
+  user_targeting: []
 })
-
-const deliveryContentStr = ref('{}')
-const deliveryRulesStr = ref('{}')
-const userTargetingStr = ref('{}')
 
 const rules: FormRules = {
   name: [
@@ -181,11 +277,18 @@ const loadCampaign = async () => {
     loading.value = true
     const res = await getCampaign(campaignId.value)
     const campaign = res.data.data
-    
-    Object.assign(formData, campaign)
-    deliveryContentStr.value = JSON.stringify(campaign.delivery_content || {}, null, 2)
-    deliveryRulesStr.value = JSON.stringify(campaign.delivery_rules || {}, null, 2)
-    userTargetingStr.value = JSON.stringify(campaign.user_targeting || {}, null, 2)
+
+    Object.assign(formData, {
+      name: campaign.name,
+      product_id: campaign.product_id,
+      description: campaign.description,
+      status: campaign.status,
+      main_image: campaign.main_image || '',
+      video: campaign.video || '',
+      delivery_content: campaign.delivery_content || [],
+      delivery_rules: campaign.delivery_rules || [],
+      user_targeting: campaign.user_targeting || []
+    })
   } catch (error) {
     ElMessage.error('加载计划信息失败')
     console.error(error)
@@ -194,37 +297,56 @@ const loadCampaign = async () => {
   }
 }
 
-const handleLogoSuccess: UploadProps['onSuccess'] = (response) => {
-  formData.logo = response.data.url
+const handleMainImageSuccess: UploadProps['onSuccess'] = (response) => {
+  formData.main_image = response.data.url
 }
 
-const beforeLogoUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png') {
-    ElMessage.error('Logo必须是JPG或PNG格式!')
+const handleVideoSuccess: UploadProps['onSuccess'] = (response) => {
+  formData.video = response.data.url
+}
+
+const beforeImageUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  const validTypes = ['image/jpeg', 'image/png']
+  if (!validTypes.includes(rawFile.type)) {
+    ElMessage.error('主图必须是JPG或PNG格式!')
     return false
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('Logo大小不能超过2MB!')
+  }
+  if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error('主图大小不能超过2MB!')
     return false
   }
   return true
 }
 
+const beforeVideoUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  if (rawFile.type !== 'video/mp4') {
+    ElMessage.error('视频必须是MP4格式!')
+    return false
+  }
+  if (rawFile.size / 1024 / 1024 > 50) {
+    ElMessage.error('视频大小不能超过50MB!')
+    return false
+  }
+  return true
+}
+
+const addField = (fieldName: 'delivery_content' | 'delivery_rules' | 'user_targeting') => {
+  formData[fieldName].push({ title: '', content: '' })
+}
+
+const removeField = (
+  fieldName: 'delivery_content' | 'delivery_rules' | 'user_targeting',
+  index: number
+) => {
+  formData[fieldName].splice(index, 1)
+}
+
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   await formRef.value.validate(async (valid) => {
     if (!valid) return
-    
-    try {
-      // 解析JSON字符串
-      formData.delivery_content = JSON.parse(deliveryContentStr.value || '{}')
-      formData.delivery_rules = JSON.parse(deliveryRulesStr.value || '{}')
-      formData.user_targeting = JSON.parse(userTargetingStr.value || '{}')
-    } catch (error) {
-      ElMessage.error('JSON格式错误，请检查输入')
-      return
-    }
-    
+
     loading.value = true
     try {
       if (isEdit.value) {
@@ -259,7 +381,8 @@ const handleBack = () => {
   align-items: center;
 }
 
-.logo-uploader {
+.image-uploader,
+.video-uploader {
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
   cursor: pointer;
@@ -267,30 +390,52 @@ const handleBack = () => {
   overflow: hidden;
   width: 178px;
   height: 178px;
-}
-
-.logo-uploader:hover {
-  border-color: var(--el-color-primary);
-}
-
-.logo-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.logo {
+.image-uploader:hover,
+.video-uploader:hover {
+  border-color: var(--el-color-primary);
+}
+
+.uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+}
+
+.uploaded-image,
+.uploaded-video {
   width: 178px;
   height: 178px;
   display: block;
   object-fit: cover;
 }
 
-.json-editor {
+.form-tip {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 5px;
+}
+
+.dynamic-fields {
   width: 100%;
+}
+
+.field-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.field-title {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.field-content {
+  flex: 1;
 }
 </style>

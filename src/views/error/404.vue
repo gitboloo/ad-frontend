@@ -24,11 +24,16 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goHome = () => {
-  router.push('/')
+  router.push('/dashboard')
 }
 
 const goBack = () => {
-  history.back()
+  // 安全地返回，如果没有历史记录则返回首页
+  if (window.history.length > 1) {
+    router.go(-1)
+  } else {
+    router.push('/dashboard')
+  }
 }
 </script>
 

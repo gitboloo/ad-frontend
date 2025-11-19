@@ -178,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, withDefaults } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { CreditCard } from '@element-plus/icons-vue'
 import { processRecharge, getUserBalance } from '@/api/finance'
@@ -193,7 +193,7 @@ interface User {
 }
 
 interface Props {
-  modelValue: boolean
+  modelValue?: boolean
 }
 
 interface Emits {
@@ -201,7 +201,9 @@ interface Emits {
   (e: 'success'): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false
+})
 const emit = defineEmits<Emits>()
 
 // 响应式数据
@@ -210,6 +212,7 @@ const loading = ref(false)
 const userSearchLoading = ref(false)
 const userOptions = ref<User[]>([])
 const selectedUser = ref<User | null>(null)
+const internalVisible = ref(false)
 
 // 表单数据
 const form = reactive({
@@ -240,8 +243,14 @@ const rules: FormRules = {
 
 // 计算属性
 const visible = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => emit('update:modelValue', value)
+  get: () => props.modelValue ?? internalVisible.value,
+  set: (value: boolean) => {
+    if (props.modelValue !== undefined) {
+      emit('update:modelValue', value)
+    } else {
+      internalVisible.value = value
+    }
+  }
 })
 
 // 搜索用户

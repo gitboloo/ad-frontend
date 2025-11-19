@@ -7,7 +7,7 @@ export interface User {
   account: string  // 后端返回的是account，不是email
   nickname?: string
   avatar?: string
-  role: number  // 后端返回的是数字：1=viewer, 2=operator, 3=admin
+  role: number  // 后端返回的是数字：1=admin(超级管理员), 2=operator(管理员), 3=viewer(普通用户)
   status: number  // 后端返回的是数字：0=inactive, 1=active
   last_login_at?: string
   created_at: string

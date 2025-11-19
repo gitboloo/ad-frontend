@@ -71,6 +71,15 @@ export function formatDateTime(time: string | Date, format = 'YYYY-MM-DD HH:mm:s
 }
 
 /**
+ * 格式化日期范围
+ */
+export function formatDateRange(startTime: string | Date, endTime: string | Date, format = 'YYYY-MM-DD'): string {
+  const start = formatTime(startTime, format)
+  const end = formatTime(endTime, format)
+  return `${start} - ${end}`
+}
+
+/**
  * 相对时间格式化
  */
 export function formatRelativeTime(time: string | Date): string {
