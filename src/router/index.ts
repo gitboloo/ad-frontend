@@ -50,6 +50,34 @@ const constantRoutes: RouteRecordRaw[] = [
           title: '组件测试',
           hidden: false
         }
+      },
+      // 产品管理相关路由
+      {
+        path: 'products/create',
+        name: 'ProductCreate',
+        component: () => import('@/views/products/ProductForm.vue'),
+        meta: {
+          title: '新增产品',
+          hidden: true
+        }
+      },
+      {
+        path: 'products/edit/:id',
+        name: 'ProductEdit',
+        component: () => import('@/views/products/ProductForm.vue'),
+        meta: {
+          title: '编辑产品',
+          hidden: true
+        }
+      },
+      {
+        path: 'products/detail/:id',
+        name: 'ProductDetail',
+        component: () => import('@/views/products/ProductDetail.vue'),
+        meta: {
+          title: '产品详情',
+          hidden: true
+        }
       }
     ]
   }

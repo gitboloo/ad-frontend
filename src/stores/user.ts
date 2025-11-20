@@ -20,12 +20,12 @@ export const useUserStore = defineStore('user', () => {
   
   // 登录
   const login = async (loginForm: {
-    username: string
+    account: string
     password: string
     remember?: boolean
   }): Promise<ApiResponse<{ token: string; admin: User }>> => {
     try {
-      const response = await request.post<{ token: string; admin: User }>('/auth/login', loginForm)
+      const response = await request.post<{ token: string; admin: User }>('/admin/auth/login', loginForm)
 
       if (response.code === 200 && response.data) {
         token.value = response.data.token
@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user', () => {
   const logout = async (): Promise<void> => {
     try {
       if (token.value) {
-        await request.post('/auth/logout')
+        await request.post('/admin/auth/logout')
       }
     } catch (error) {
       console.error('Logout error:', error)
@@ -63,7 +63,7 @@ export const useUserStore = defineStore('user', () => {
     if (!token.value) return
 
     try {
-      const response = await request.get<any>('/auth/me')
+      const response = await request.get<any>('/admin/auth/me')
       if (response.code === 200 && response.data) {
         // 后端返回的数据结构: { admin, roles, menus, permissions }
         user.value = response.data.admin
@@ -117,7 +117,7 @@ export const useUserStore = defineStore('user', () => {
     if (!token.value) return
     
     try {
-      const response = await request.get<string[]>('/auth/permissions')
+      const response = await request.get<string[]>('/admin/auth/permissions')
       if (response.code === 200 && response.data) {
         permissions.value = response.data
       }
@@ -132,7 +132,7 @@ export const useUserStore = defineStore('user', () => {
     if (!token.value) return
     
     try {
-      const response = await request.get<any[]>('/auth/menus')
+      const response = await request.get<any[]>('/admin/auth/menus')
       console.log('Menu response:', response)  // 调试日志
       if (response.code === 200 && response.data) {
         // 将菜单数据存储在user store中
@@ -153,7 +153,7 @@ export const useUserStore = defineStore('user', () => {
   // 更新用户信息
   const updateUserInfo = async (userInfo: Partial<User>): Promise<boolean> => {
     try {
-      const response = await request.put<User>('/auth/profile', userInfo)
+      const response = await request.put<User>('/admin/auth/profile', userInfo)
       if (response.success) {
         user.value = response.data
         return true
@@ -172,7 +172,7 @@ export const useUserStore = defineStore('user', () => {
     confirmPassword: string
   }): Promise<boolean> => {
     try {
-      const response = await request.put('/auth/password', passwordForm)
+      const response = await request.put('/admin/auth/password', passwordForm)
       return response.success
     } catch (error) {
       console.error('Change password error:', error)
@@ -183,7 +183,7 @@ export const useUserStore = defineStore('user', () => {
   // 上传头像
   const uploadAvatar = async (file: File): Promise<string | null> => {
     try {
-      const response = await request.upload<{ url: string }>('/auth/avatar', file)
+      const response = await request.upload<{ url: string }>('/admin/auth/avatar', file)
       if (response.success) {
         if (user.value) {
           user.value.avatar = response.data.url

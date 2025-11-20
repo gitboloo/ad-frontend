@@ -9,22 +9,21 @@ export function getTransactions(params?: ListQuery & {
   startDate?: string
   endDate?: string
 }) {
-  return request.get<ListResponse<Transaction>>('/finance/transactions', { params })
+  return request.get<ListResponse<Transaction>>('/admin/finance/transactions', { params })
 }
 
 // 获取交易详情
 export function getTransaction(id: number) {
-  return request.get<Transaction>(`/finance/transactions/${id}`)
+  return request.get<Transaction>(`/admin/finance/transactions/${id}`)
 }
 
-// 处理充值
-export function processRecharge(data: RechargeRequest & { userId: number }) {
-  return request.post<Transaction>('/finance/recharge', data)
+// 处理充�?export function processRecharge(data: RechargeRequest & { userId: number }) {
+  return request.post<Transaction>('/admin/finance/recharge', data)
 }
 
 // 处理提现
 export function processWithdraw(data: WithdrawRequest & { userId: number }) {
-  return request.post<Transaction>('/finance/withdraw', data)
+  return request.post<Transaction>('/admin/finance/withdraw', data)
 }
 
 // 审核交易
@@ -32,7 +31,7 @@ export function reviewTransaction(id: number, data: {
   status: 'completed' | 'failed' | 'cancelled'
   remark?: string
 }) {
-  return request.put<Transaction>(`/finance/transactions/${id}/review`, data)
+  return request.put<Transaction>(`/admin/finance/transactions/${id}/review`, data)
 }
 
 // 批量审核交易
@@ -41,12 +40,12 @@ export function batchReviewTransactions(data: {
   status: 'completed' | 'failed' | 'cancelled'
   remark?: string
 }) {
-  return request.put('/finance/transactions/batch-review', data)
+  return request.put('/admin/finance/transactions/batch-review', data)
 }
 
 // 获取用户余额
 export function getUserBalance(userId: number) {
-  return request.get<{ balance: number; frozenBalance: number }>(`/finance/users/${userId}/balance`)
+  return request.get<{ balance: number; frozenBalance: number }>(`/admin/finance/users/${userId}/balance`)
 }
 
 // 调整用户余额
@@ -55,7 +54,7 @@ export function adjustUserBalance(userId: number, data: {
   type: 'add' | 'subtract'
   description: string
 }) {
-  return request.post(`/finance/users/${userId}/balance/adjust`, data)
+  return request.post(`/admin/finance/users/${userId}/balance/adjust`, data)
 }
 
 // 获取财务统计
@@ -79,7 +78,7 @@ export function getFinanceStats(params?: {
       statusDistribution: { status: string; count: number; percentage: number }[]
     }
     recent: Transaction[]
-  }>('/finance/stats', { params })
+  }>('/admin/finance/stats', { params })
 }
 
 // 获取收入支出报表
@@ -98,7 +97,7 @@ export function getIncomeExpenseReport(params?: {
       netProfit: number
       growthRate: number
     }
-  }>('/finance/reports/income-expense', { params })
+  }>('/admin/finance/reports/income-expense', { params })
 }
 
 // 导出财务报表
@@ -110,7 +109,7 @@ export function exportFinanceReport(params: {
   userId?: number
   status?: string
 }) {
-  return request.get('/finance/export', { 
+  return request.get('/admin/finance/export', { 
     params, 
     responseType: 'blob' 
   })
@@ -132,7 +131,7 @@ export function getPaymentMethodStats(params?: {
       date: string
       [method: string]: number | string
     }[]
-  }>('/finance/stats/payment-methods', { params })
+  }>('/admin/finance/stats/payment-methods', { params })
 }
 
 // 批量导入交易记录
@@ -141,7 +140,7 @@ export function importTransactions(file: File) {
     success: number
     failed: number
     errors: string[]
-  }>('/finance/transactions/import', file)
+  }>('/admin/finance/transactions/import', file)
 }
 
 // 获取账户余额变动记录
@@ -154,5 +153,6 @@ export function getBalanceHistory(userId: number, params?: ListQuery) {
     description: string
     transactionId?: number
     createdAt: string
-  }>>(`/finance/users/${userId}/balance/history`, { params })
+  }>>(`/admin/finance/users/${userId}/balance/history`, { params })
 }
+

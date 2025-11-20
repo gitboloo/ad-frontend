@@ -14,7 +14,7 @@
         </div>
         <div class="page-actions">
           <el-button
-            v-permission="'product:edit'"
+            v-permission="'products.edit'"
             type="primary"
             @click="router.push(`/products/edit/${product.id}`)"
           >
@@ -43,16 +43,9 @@
           <el-col :span="16">
             <el-card title="基本信息">
               <el-descriptions :column="2" border>
-                <el-descriptions-item label="产品名称">{{ product.name }}</el-descriptions-item>
-                <el-descriptions-item label="产品分类">{{ product.category }}</el-descriptions-item>
-                <el-descriptions-item label="当前价格">
-                  <span class="price">{{ formatCurrency(product.price) }}</span>
+                <el-descriptions-item label="产品名称">
+                  {{ product.name }}
                 </el-descriptions-item>
-                <el-descriptions-item label="原价">
-                  <span v-if="product.originalPrice">{{ formatCurrency(product.originalPrice) }}</span>
-                  <span v-else>-</span>
-                </el-descriptions-item>
-                <el-descriptions-item label="库存">{{ product.stock }}</el-descriptions-item>
                 <el-descriptions-item label="状态">
                   <el-tag :type="getStatusConfig(product.status, 'product').type">
                     {{ getStatusConfig(product.status, 'product').text }}
@@ -110,7 +103,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { getProduct } from '@/api/products'
-import { formatCurrency, formatTime, getStatusConfig } from '@/utils'
+import { formatTime, getStatusConfig } from '@/utils'
 import type { Product } from '@/types'
 
 const router = useRouter()

@@ -6,16 +6,18 @@ import type { RouteRecordRaw } from 'vue-router'
 export interface BackendMenuItem {
   id: number
   name: string
-  title: string
+  title?: string
   path: string
   component?: string
   redirect?: string
   icon?: string
-  parent_id: number
-  is_hidden: number
-  is_affix: number
-  is_cache: number
-  type: number // 1=目录 2=页面
+  parent_id?: number
+  hidden?: boolean  // 后端实际返回的是 hidden（boolean）
+  is_hidden?: number
+  is_affix?: number
+  is_cache?: number
+  sort?: number
+  type?: number // 1=目录 2=页面
   children?: BackendMenuItem[]
 }
 
@@ -42,23 +44,32 @@ const componentMap: Record<string, () => Promise<any>> = {
   'dashboard/index': () => import('@/views/dashboard/index.vue'),
   'views/dashboard/index.vue': () => import('@/views/dashboard/index.vue'),
   
-    // Products  
-    'products/ProductList': () => import('@/views/products/ProductList.vue'),
-    'ProductList': () => import('@/views/products/ProductList.vue'),
-    'views/products/ProductList.vue': () => import('@/views/products/ProductList.vue'),
-    'views/products/ProductForm.vue': () => import('@/views/products/ProductForm.vue'),  // Campaigns
+  // Products  
+  'products/ProductList': () => import('@/views/products/ProductList.vue'),
+  'products/ProductForm': () => import('@/views/products/ProductForm.vue'),
+  'ProductList': () => import('@/views/products/ProductList.vue'),
+  'views/products/ProductList.vue': () => import('@/views/products/ProductList.vue'),
+  'views/products/ProductForm.vue': () => import('@/views/products/ProductForm.vue'),
+  
+  // Campaigns
   'campaigns/CampaignList': () => import('@/views/campaigns/CampaignList.vue'),
+  'campaigns/CampaignForm': () => import('@/views/campaigns/CampaignForm.vue'),
+  'campaigns/CampaignStats': () => import('@/views/campaigns/CampaignStats.vue'),
   'views/campaigns/CampaignList.vue': () => import('@/views/campaigns/CampaignList.vue'),
   'views/campaigns/CampaignForm.vue': () => import('@/views/campaigns/CampaignForm.vue'),
   'views/campaigns/CampaignStats.vue': () => import('@/views/campaigns/CampaignStats.vue'),
   
   // Coupons
   'coupons/CouponList': () => import('@/views/coupons/CouponList.vue'),
+  'coupons/CouponForm': () => import('@/views/coupons/CouponForm.vue'),
+  'coupons/UserCouponList': () => import('@/views/coupons/UserCouponList.vue'),
   'views/coupons/CouponList.vue': () => import('@/views/coupons/CouponList.vue'),
   'views/coupons/CouponForm.vue': () => import('@/views/coupons/CouponForm.vue'),
   'views/coupons/UserCouponList.vue': () => import('@/views/coupons/UserCouponList.vue'),
   
   // Auth Codes
+  'authcodes/AuthCodeList': () => import('@/views/authcodes/AuthCodeList.vue'),
+  'authcodes/AuthCodeGenerate': () => import('@/views/authcodes/AuthCodeGenerate.vue'),
   'views/authcodes/AuthCodeList.vue': () => import('@/views/authcodes/AuthCodeList.vue'),
   'views/authcodes/AuthCodeGenerate.vue': () => import('@/views/authcodes/AuthCodeGenerate.vue'),
   
@@ -67,6 +78,7 @@ const componentMap: Record<string, () => Promise<any>> = {
   'finance/RechargeForm': () => import('@/views/finance/RechargeListPage.vue'),
   'finance/RechargeListPage': () => import('@/views/finance/RechargeListPage.vue'),
   'finance/WithdrawForm': () => import('@/views/finance/WithdrawForm.vue'),
+  'finance/FinanceStats': () => import('@/views/finance/FinanceStats.vue'),
   'views/finance/TransactionList.vue': () => import('@/views/finance/TransactionList.vue'),
   'views/finance/RechargeForm.vue': () => import('@/views/finance/RechargeListPage.vue'),
   'views/finance/RechargeListPage.vue': () => import('@/views/finance/RechargeListPage.vue'),
@@ -75,32 +87,37 @@ const componentMap: Record<string, () => Promise<any>> = {
   
   // Customers
   'customers/CustomerList': () => import('@/views/customers/CustomerList.vue'),
+  'customers/CustomerForm': () => import('@/views/customers/CustomerForm.vue'),
+  'customers/CustomerDetail': () => import('@/views/customers/CustomerDetail.vue'),
   'views/customers/CustomerList.vue': () => import('@/views/customers/CustomerList.vue'),
   'views/customers/CustomerForm.vue': () => import('@/views/customers/CustomerForm.vue'),
   'views/customers/CustomerDetail.vue': () => import('@/views/customers/CustomerDetail.vue'),
   
   // Agents
+  'agents/AgentList': () => import('@/views/agents/AgentList.vue'),
+  'agents/WithdrawalList': () => import('@/views/agents/WithdrawalList.vue'),
   'views/agents/AgentList.vue': () => import('@/views/agents/AgentList.vue'),
   'views/agents/WithdrawalList.vue': () => import('@/views/agents/WithdrawalList.vue'),
   
   // System
   'system/AdminList': () => import('@/views/system/AdminList.vue'),
+  'system/AdminForm': () => import('@/views/system/AdminForm.vue'),
   'system/PermissionList': () => import('@/views/system/PermissionList.vue'),
   'system/RoleList': () => import('@/views/system/RoleList.vue'),
   'system/SystemConfig': () => import('@/views/system/SystemConfig.vue'),
   'views/system/SystemConfig.vue': () => import('@/views/system/SystemConfig.vue'),
   'views/system/AdminList.vue': () => import('@/views/system/AdminList.vue'),
+  'views/system/AdminForm.vue': () => import('@/views/system/AdminForm.vue'),
   'views/system/PermissionList.vue': () => import('@/views/system/PermissionList.vue'),
   'views/system/RoleList.vue': () => import('@/views/system/RoleList.vue'),
-  'views/system/AdminForm.vue': () => import('@/views/system/AdminForm.vue'),
   
-    // Statistics
-    'statistics/Overview': () => import('@/views/statistics/Overview.vue'),
-    'Overview': () => import('@/views/statistics/Overview.vue'),
-    'statistics/ProductStats': () => import('@/views/statistics/ProductStats.vue'),
-    'ProductStats': () => import('@/views/statistics/ProductStats.vue'),
-    'statistics/RevenueStats': () => import('@/views/statistics/RevenueStats.vue'),
-    'RevenueStats': () => import('@/views/statistics/RevenueStats.vue'),
+  // Statistics
+  'statistics/Overview': () => import('@/views/statistics/Overview.vue'),
+  'statistics/ProductStats': () => import('@/views/statistics/ProductStats.vue'),
+  'statistics/RevenueStats': () => import('@/views/statistics/RevenueStats.vue'),
+  'Overview': () => import('@/views/statistics/Overview.vue'),
+  'ProductStats': () => import('@/views/statistics/ProductStats.vue'),
+  'RevenueStats': () => import('@/views/statistics/RevenueStats.vue'),
   'views/statistics/Overview.vue': () => import('@/views/statistics/Overview.vue'),
   'views/statistics/ProductStats.vue': () => import('@/views/statistics/ProductStats.vue'),
   'views/statistics/RevenueStats.vue': () => import('@/views/statistics/RevenueStats.vue'),
@@ -192,7 +209,16 @@ export function transformMenusToRoutes(menus: BackendMenuItem[]): RouteRecordRaw
  */
 function filterVisibleMenusForRoutes(menus: BackendMenuItem[]): BackendMenuItem[] {
   return menus
-    .filter(menu => menu.is_hidden === 0) // 只保留非隐藏菜单
+    .filter(menu => {
+      // 兼容两种格式：hidden (boolean) 和 is_hidden (number)
+      if (menu.hidden !== undefined) {
+        return !menu.hidden
+      }
+      if (menu.is_hidden !== undefined) {
+        return menu.is_hidden === 0
+      }
+      return true // 默认显示
+    })
     .map(menu => {
       if (menu.children && menu.children.length > 0) {
         return {
@@ -222,8 +248,8 @@ function transformMenuToRoute(menu: BackendMenuItem): RouteRecordRaw {
     name: menu.name,
     path: menu.path,
     meta: {
-      title: menu.title,
-      hidden: menu.is_hidden === 1,
+      title: menu.title || menu.name,
+      hidden: menu.hidden !== undefined ? menu.hidden : (menu.is_hidden === 1),
       affix: menu.is_affix === 1,
       cache: menu.is_cache === 1,
     }
@@ -236,29 +262,35 @@ function transformMenuToRoute(menu: BackendMenuItem): RouteRecordRaw {
 
   // 处理组件路径
   if (menu.component) {
+    // 先尝试清理路径：去掉 @/views/ 或 views/ 前缀和 .vue 后缀
+    let cleanedPath = menu.component
+      .replace(/^@\/views\//, '')  // 去掉 @/views/ 前缀
+      .replace(/^views\//, '')      // 去掉 views/ 前缀
+      .replace(/\.vue$/, '')        // 去掉 .vue 后缀
+    
     // 直接查找组件映射（支持后端返回的格式）
     let componentLoader = componentMap[menu.component]
     if (componentLoader) {
       route.component = componentLoader
     } else {
-      // 尝试添加 views/ 前缀的格式
-      const viewsPath = `views/${menu.component}.vue`
-      componentLoader = componentMap[viewsPath]
+      // 尝试清理后的路径
+      componentLoader = componentMap[cleanedPath]
       if (componentLoader) {
         route.component = componentLoader
       } else {
-        // 尝试去掉可能存在的扩展名后再匹配
-        const cleanPath = menu.component.replace(/\.vue$/, '')
-        componentLoader = componentMap[cleanPath]
+        // 尝试添加 views/ 前缀的格式
+        const viewsPath = `views/${cleanedPath}.vue`
+        componentLoader = componentMap[viewsPath]
         if (componentLoader) {
           route.component = componentLoader
         } else {
           // 尝试从组件路径中提取文件名进行匹配
-          const fileName = menu.component.split('/').pop()
+          const fileName = cleanedPath.split('/').pop()
           if (fileName && componentMap[fileName]) {
             route.component = componentMap[fileName]
           } else {
-            console.warn(`组件未找到: ${menu.component} (菜单: ${menu.title})`)
+            console.warn(`组件未找到: ${menu.component} (菜单: ${menu.title || menu.name})`)
+            console.warn(`  尝试过的路径: ${menu.component}, ${cleanedPath}, ${viewsPath}, ${fileName}`)
           }
         }
       }
@@ -307,7 +339,16 @@ export function filterHiddenRoutes(routes: BackendRoute[]): BackendRoute[] {
  */
 export function filterHiddenMenus(menus: BackendMenuItem[]): BackendMenuItem[] {
   return menus
-    .filter(menu => menu.is_hidden === 0) // 只保留非隐藏的菜单
+    .filter(menu => {
+      // 兼容两种格式
+      if (menu.hidden !== undefined) {
+        return !menu.hidden
+      }
+      if (menu.is_hidden !== undefined) {
+        return menu.is_hidden === 0
+      }
+      return true
+    })
     .map(menu => {
       if (menu.children && menu.children.length > 0) {
         return {
@@ -345,9 +386,9 @@ export function transformMenusForDisplay(menus: BackendMenuItem[]): MenuItem[] {
   return visibleMenus.map(menu => ({
     id: menu.id.toString(),
     name: menu.name,
-    title: menu.title,
+    title: menu.title || menu.name,
     path: menu.path,
-    icon: menu.icon,
+    icon: menu.icon || '',
     hidden: false, // 已经通过 filterHiddenMenus 过滤,所以都是可见的
     children: menu.children ? transformMenusForDisplay(menu.children) : undefined
   }))

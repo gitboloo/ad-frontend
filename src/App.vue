@@ -148,4 +148,21 @@ html, body, #app {
 .mr-4 {
   margin-right: 16px;
 }
+
+// Element Plus 图片预览组件层级提升
+.el-image-viewer__wrapper,
+.el-overlay {
+  z-index: 99999 !important;
+}
+
+.el-image-viewer__mask {
+  z-index: 99999 !important;
+}
+
+.el-image__preview,
+.el-image-viewer__canvas,
+.el-image-viewer__actions,
+.el-image-viewer__close {
+  z-index: 100000 !important;
+}
 </style>

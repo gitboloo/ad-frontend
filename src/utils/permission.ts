@@ -1,51 +1,51 @@
 import { useUserStore } from '@/stores/user'
 import type { User } from '@/types'
 
-// 权限配置
+// 权限配置（与后端保持一致，使用点号分隔）
 export const PERMISSIONS = {
   // 产品管理
-  PRODUCT_VIEW: 'product:view',
-  PRODUCT_CREATE: 'product:create',
-  PRODUCT_EDIT: 'product:edit',
-  PRODUCT_DELETE: 'product:delete',
+  PRODUCT_VIEW: 'products.list',
+  PRODUCT_CREATE: 'products.create',
+  PRODUCT_EDIT: 'products.edit',
+  PRODUCT_DELETE: 'products.delete',
   
   // 计划管理
-  CAMPAIGN_VIEW: 'campaign:view',
-  CAMPAIGN_CREATE: 'campaign:create',
-  CAMPAIGN_EDIT: 'campaign:edit',
-  CAMPAIGN_DELETE: 'campaign:delete',
-  CAMPAIGN_START: 'campaign:start',
-  CAMPAIGN_PAUSE: 'campaign:pause',
+  CAMPAIGN_VIEW: 'campaigns.list',
+  CAMPAIGN_CREATE: 'campaigns.create',
+  CAMPAIGN_EDIT: 'campaigns.edit',
+  CAMPAIGN_DELETE: 'campaigns.delete',
+  CAMPAIGN_START: 'campaigns.start',
+  CAMPAIGN_PAUSE: 'campaigns.pause',
   
   // 优惠券管理
-  COUPON_VIEW: 'coupon:view',
-  COUPON_CREATE: 'coupon:create',
-  COUPON_EDIT: 'coupon:edit',
-  COUPON_DELETE: 'coupon:delete',
+  COUPON_VIEW: 'coupons.list',
+  COUPON_CREATE: 'coupons.create',
+  COUPON_EDIT: 'coupons.edit',
+  COUPON_DELETE: 'coupons.delete',
   
   // 授权码管理
-  AUTHCODE_VIEW: 'authcode:view',
-  AUTHCODE_CREATE: 'authcode:create',
-  AUTHCODE_DELETE: 'authcode:delete',
+  AUTHCODE_VIEW: 'authcodes.list',
+  AUTHCODE_CREATE: 'authcodes.create',
+  AUTHCODE_DELETE: 'authcodes.delete',
   
   // 财务管理
-  FINANCE_VIEW: 'finance:view',
-  FINANCE_RECHARGE: 'finance:recharge',
-  FINANCE_WITHDRAW: 'finance:withdraw',
-  FINANCE_APPROVE: 'finance:approve',
+  FINANCE_VIEW: 'finance.list',
+  FINANCE_RECHARGE: 'finance.recharge',
+  FINANCE_WITHDRAW: 'finance.withdraw',
+  FINANCE_APPROVE: 'finance.approve',
   
   // 客户管理
-  CUSTOMER_VIEW: 'customer:view',
-  CUSTOMER_EDIT: 'customer:edit',
-  CUSTOMER_BAN: 'customer:ban',
+  CUSTOMER_VIEW: 'customers.list',
+  CUSTOMER_EDIT: 'customers.edit',
+  CUSTOMER_BAN: 'customers.ban',
   
   // 系统管理
-  SYSTEM_CONFIG: 'system:config',
-  ADMIN_MANAGE: 'admin:manage',
+  SYSTEM_CONFIG: 'system.config',
+  ADMIN_MANAGE: 'admins.manage',
   
   // 数据统计
-  STATS_VIEW: 'stats:view',
-  STATS_EXPORT: 'stats:export'
+  STATS_VIEW: 'statistics.view',
+  STATS_EXPORT: 'statistics.export'
 }
 
 // 角色权限映射
@@ -90,11 +90,11 @@ export function hasPermission(permission: string): boolean {
   if (!user) return false
   
   // 管理员拥有所有权限
-  if (user.role === 'admin') return true
+  if (user.role === 1 || user.role === 'admin') return true
   
-  // 检查角色权限
-  const rolePermissions = ROLE_PERMISSIONS[user.role] || []
-  return rolePermissions.includes(permission)
+  // 使用后端返回的实际权限列表
+  const userPermissions = userStore.permissions || []
+  return userPermissions.includes(permission)
 }
 
 /**

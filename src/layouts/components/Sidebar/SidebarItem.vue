@@ -101,15 +101,17 @@ const resolvePath = (routePath?: string) => {
 // 处理菜单点击
 const handleMenuClick = (item: MenuItem) => {
   console.log('[SidebarItem] Menu clicked:', item.title, 'path:', item.path)
-  if (item.path) {
-    if (isExternal(item.path)) {
-      window.open(item.path, '_blank')
-    } else {
-      console.log('[SidebarItem] Navigating to:', item.path)
-      router.push(item.path).catch(err => {
-        console.error('[SidebarItem] Navigation failed:', err)
-      })
-    }
+  // 解析完整路径
+  const fullPath = resolvePath(item.path)
+  console.log('[SidebarItem] Resolved path:', fullPath)
+  
+  if (isExternal(fullPath)) {
+    window.open(fullPath, '_blank')
+  } else {
+    console.log('[SidebarItem] Navigating to:', fullPath)
+    router.push(fullPath).catch(err => {
+      console.error('[SidebarItem] Navigation failed:', err)
+    })
   }
 }
 
