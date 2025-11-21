@@ -87,14 +87,22 @@ export function hasPermission(permission: string): boolean {
   const userStore = useUserStore()
   const user = userStore.user
   
-  if (!user) return false
+  if (!user) {
+    console.log('[Permission] No user found')
+    return false
+  }
   
-  // 管理员拥有所有权限
-  if (user.role === 1 || user.role === 'admin') return true
+  // 超级管理员(role=1)和管理员(role=2)拥有所有权限
+  if (user.role === 1 || user.role === 2 || user.role === 'admin' || user.role === 'super_admin') {
+    console.log('[Permission] User is admin, granting all permissions')
+    return true
+  }
   
   // 使用后端返回的实际权限列表
   const userPermissions = userStore.permissions || []
-  return userPermissions.includes(permission)
+  const hasAuth = userPermissions.includes(permission)
+  console.log(`[Permission] Check ${permission}:`, hasAuth, 'User permissions:', userPermissions.slice(0, 5))
+  return hasAuth
 }
 
 /**

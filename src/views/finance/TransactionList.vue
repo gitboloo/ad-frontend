@@ -6,23 +6,6 @@
         <h2>交易记录</h2>
         <p>管理所有用户的充值、消费、提现等交易记录</p>
       </div>
-      <div class="page-actions">
-        <el-dropdown @command="handleQuickAction">
-          <el-button type="primary">
-            快速操作
-            <el-icon class="el-icon--right">
-              <ArrowDown />
-            </el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="recharge">处理充值</el-dropdown-item>
-              <el-dropdown-item command="withdraw">处理提现</el-dropdown-item>
-              <el-dropdown-item command="export">导出数据</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
     </div>
 
     <!-- 统计卡片 -->
@@ -120,6 +103,25 @@
               重置
             </el-button>
           </div>
+        </div>
+        
+        <!-- 操作按钮区 -->
+        <div class="action-buttons">
+          <el-dropdown @command="handleQuickAction">
+            <el-button type="primary">
+              快速操作
+              <el-icon class="el-icon--right">
+                <ArrowDown />
+              </el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="recharge">处理充值</el-dropdown-item>
+                <el-dropdown-item command="withdraw">处理提现</el-dropdown-item>
+                <el-dropdown-item command="export">导出数据</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </el-card>
     </div>
@@ -816,6 +818,15 @@ onMounted(() => {
         display: flex;
         gap: 12px;
       }
+    }
+    
+    .action-buttons {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--el-border-color-lighter);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
   }
 

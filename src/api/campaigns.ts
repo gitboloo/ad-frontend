@@ -29,8 +29,9 @@ export function deleteCampaign(id: number) {
   return request.delete(`/admin/campaigns/${id}`)
 }
 
-// 更新计划状�?export function updateCampaignStatus(id: number, status: string) {
-  return request.patch(`/admin/campaigns/${id}/status`, { status })
+// 更新计划状态
+export function updateCampaignStatus(id: number, data: { status: number }) {
+  return request.put(`/admin/campaigns/${id}/status`, data)
 }
 
 // 获取计划统计

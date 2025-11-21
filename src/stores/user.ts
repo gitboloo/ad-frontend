@@ -93,9 +93,8 @@ export const useUserStore = defineStore('user', () => {
           
           menus.value = sortMenusRecursive(response.data.menus)
           
-          // 同时更新permission store的菜单（使用已排序的菜单）
-          const permissionStore = usePermissionStore()
-          permissionStore.setMenus(menus.value)
+          // 不需要在这里调用 setMenus，因为 permissionStore.generateMenus() 会从 userStore.menus 读取
+          // 菜单的转换和设置会在路由初始化时通过 generateMenus 完成
         }
 
         // 保存权限信息
@@ -139,10 +138,8 @@ export const useUserStore = defineStore('user', () => {
         menus.value = response.data
         console.log('Menus stored:', menus.value)  // 调试日志
         
-        // 同时更新permission store的菜单
-        const permissionStore = usePermissionStore()
-        permissionStore.setMenus(response.data)
-        console.log('Menus set to permission store')  // 调试日志
+        // 菜单的转换和设置会在路由初始化时通过 permissionStore.generateMenus() 完成
+        // 不需要在这里直接调用 setMenus
       }
     } catch (error) {
       console.error('Get user menus error:', error)

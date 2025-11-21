@@ -78,6 +78,25 @@ const constantRoutes: RouteRecordRaw[] = [
           title: '产品详情',
           hidden: true
         }
+      },
+      // 计划管理相关路由
+      {
+        path: 'campaigns/create',
+        name: 'CampaignCreate',
+        component: () => import('@/views/campaigns/CampaignForm.vue'),
+        meta: {
+          title: '新增计划',
+          hidden: true
+        }
+      },
+      {
+        path: 'campaigns/edit/:id',
+        name: 'CampaignEdit',
+        component: () => import('@/views/campaigns/CampaignForm.vue'),
+        meta: {
+          title: '编辑计划',
+          hidden: true
+        }
       }
     ]
   }
@@ -175,7 +194,7 @@ router.beforeEach(async (to, from) => {
         
         console.log('✅ 已注册动态路由，当前所有路由:', router.getRoutes().length, '条')
         
-        // 生成菜单
+        // 生成菜单（转换后端菜单数据为前端展示格式）
         permissionStore.generateMenus()
         
         // 关键：路由注册后，使用 push 重新导航以确保路由表已更新

@@ -40,6 +40,7 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
   size: 'default',
+  zIndex: 3000,
 })
 app.use(globalPlugin)
 

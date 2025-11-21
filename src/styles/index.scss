@@ -617,23 +617,35 @@ a {
   }
 }
 
+// 修复对话框中 select 下拉菜单显示问题
+.el-dialog {
+  .el-dialog__body {
+    overflow: visible !important;
+  }
+}
+
+.el-select-dropdown,
+.el-popper {
+  z-index: 3000 !important;
+}
+
 // 暗色主题
 html.dark {
   body {
     background-color: $dark-bg-color-page;
     color: $dark-text-color-primary;
   }
-  
+
   .el-card {
     background-color: $dark-bg-color-overlay;
     border-color: $dark-border-color-base;
-    
+
     .el-card__header {
       background-color: $dark-bg-color;
       border-bottom-color: $dark-border-color-base;
     }
   }
-  
+
   .el-table {
     .el-table__header {
       th {
@@ -642,11 +654,11 @@ html.dark {
       }
     }
   }
-  
+
   .table-filters {
     background-color: $dark-bg-color;
   }
-  
+
   .stats-card {
     background: linear-gradient(135deg, $dark-bg-color-overlay, $dark-bg-color);
     color: $dark-text-color-primary;
